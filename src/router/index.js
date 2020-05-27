@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import store from '@/store'
+import store from '@/store'
 Vue.use(Router)
 
 const router = new Router({
@@ -10,11 +10,21 @@ const router = new Router({
     component: () => import('@/pages/login/Login')
   }, {
     path: '/home',
+    redirect: '/home/all',
     name: 'Home',
     meta: {
       requireAuth: true
     },
-    component: () => import('@/pages/home/Home')
+    component: () => import('@/pages/home/Home'),
+    children: [{
+      path: 'all',
+      name: 'All',
+      component: () => import('@/pages/home/components/All')
+    }, {
+      path: ':id',
+      name: 'Personal',
+      component: () => import('@/pages/home/components/Personal')
+    }]
   }, {
     path: '/register',
     name: 'Register',
@@ -22,18 +32,18 @@ const router = new Router({
   }]
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (to.matched.some(r => r.meta.requireAuth)) {
-//     if (store.state.token) {
-//       next()
-//     } else {
-//       next({
-//         path: '/'
-//       })
-//     }
-//   } else {
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(r => r.meta.requireAuth)) {
+    if (store.state.token) {
+      next()
+    } else {
+      next({
+        path: '/'
+      })
+    }
+  } else {
+    next()
+  }
+})
 
 export default router

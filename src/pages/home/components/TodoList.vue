@@ -2,7 +2,11 @@
   <div class="todolist">
     <el-container>
       <el-header height="20">
-        <h1>备忘录</h1>
+        <h1>
+          <el-link type="info" style="color: #fff;" @click="updateNickname">{{user}}</el-link>
+          <i class="el-icon-edit el-icon--right"></i>
+          <el-divider direction="vertical"></el-divider>备忘录
+        </h1>
       </el-header>
       <el-main class="main">
         <el-input
@@ -40,10 +44,22 @@
         </div>
       </el-main>
     </el-container>
+    <el-dialog title="编辑" :visible.sync="dialogFormVisible" center>
+      <el-form :model="editObj" :rules="rules" hide-required-asterisk @submit.native.prevent>
+        <el-form-item label="昵称">
+          <el-input v-model="editObj.nickname" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="updateConfirm">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 const STORAGE_KEY = 'todolist'
 
 function fetch () {
@@ -57,6 +73,14 @@ export default {
   name: 'TodoList',
   data () {
     return {
+      dialogFormVisible: false,
+      editObj: {
+        nickname: ''
+      },
+      rules: {
+        nickname: [{ required: true, message: '新昵称不能为空~', trigger: 'blur' }]
+      },
+      user: localStorage.nickname ? localStorage.nickname : '',
       newtodo: {
         content: '',
         done: false
@@ -65,6 +89,33 @@ export default {
     }
   },
   methods: {
+    updateNickname () {
+      this.editObj.nickname = this.user
+      this.dialogFormVisible = true
+    },
+    updateConfirm () {
+      this.$confirm('确认要使用新昵称吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const id = this.$store.state.user.id
+        axios.patch(`/api/users/${id}`, { nickname: this.editObj.nickname }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          })
+          this.user = this.editObj.nickname
+        })
+        this.dialogFormVisible = false
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消修改'
+        })
+        this.dialogFormVisible = false
+      })
+    },
     add: function () {
       if (this.newtodo.content) {
         this.todolist.push(this.newtodo)
@@ -87,6 +138,9 @@ export default {
       },
       deep: true
     }
+  },
+  mounted () {
+    this.user = localStorage.nickname !== '' ? localStorage.nickname : localStorage.username
   }
 }
 </script>

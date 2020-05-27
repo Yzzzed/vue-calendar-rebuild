@@ -10,7 +10,13 @@
         :lunarcalendar="true"
         value-format="yyyy-MM-dd"
       ></ele-calendar>-->
-      <date-picker v-model="calDate" :inline="true" format="YYYY-MM-DD" value-type="format"></date-picker>
+      <date-picker
+        v-model="calDate"
+        :inline="true"
+        format="YYYY-MM-DD"
+        value-type="format"
+        @change="setDay"
+      ></date-picker>
     </div>
     <div class="todolist-container">
       <todo-list></todo-list>
@@ -42,19 +48,14 @@ export default {
   },
   computed: {
     ...mapState({
-      // currentDate: 'date'
-    }),
-    date: {
-      get () {
-        return this.$store.state.date
-      },
-      set (val) {
-        this.$store.date = this.calDate
-      }
-    }
+      currentDate: 'date'
+    })
   },
   methods: {
-    ...mapMutations(['setQueryDate'])
+    ...mapMutations(['setQueryDay']),
+    setDay (date) {
+      this.setQueryDay(date)
+    }
     // renderContent (h, parmas) {
     //   const loop = data => {
     //     return data.defvalue.value ? (
@@ -74,7 +75,7 @@ export default {
   },
   watch: {
     calDate (val) {
-      this.setQueryDate(val)
+      this.setDay(val)
     }
   }
 }

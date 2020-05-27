@@ -78,11 +78,12 @@ export default {
     },
     handleLogin (res) {
       res = res.data
+      console.log(res)
       if (res.token) {
         this.setToken(res.token)
         this.userLogin(res.user)
         if (this.$store.state.token) {
-          this.$router.push('/home')
+          this.$router.push('/home/all')
         } else {
           this.$router.replace('/')
         }

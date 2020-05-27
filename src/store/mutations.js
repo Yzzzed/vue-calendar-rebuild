@@ -2,7 +2,9 @@ export default {
   userLogin (state, user) {
     state.user = user
     try {
-      localStorage.user = user
+      localStorage.userid = user.id
+      localStorage.username = user.username
+      localStorage.nickname = user.nickname
     } catch (e) {}
   },
   userLogout (state) {
@@ -20,5 +22,8 @@ export default {
   },
   setQueryUser (state, onlyUser) {
     state.onlyUser = onlyUser
+  },
+  setQueryDay (state, date) {
+    state.selectedDate = date
   }
 }

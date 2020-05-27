@@ -8,7 +8,7 @@ import App from './App'
 import router from './router'
 import fastClick from 'fastclick'
 import store from './store'
-// import Axios from 'axios'
+import Axios from 'axios'
 import './assets/styles/reset.css'
 import './assets/styles/border.css'
 
@@ -21,14 +21,14 @@ Vue.use(ElementUI)
 // Axios.defaults.timeout = 5000 // 请求超时
 // Axios.defaults.baseURL = 'http://backcalendar.hyzed.cn/'
 
-// Axios.interceptors.request.use(config => {
-//   if (store.state.token) {
-//     config.headers.common['authorization'] = `Bearer ${store.state.token}`
-//   }
-//   return config
-// }, error => {
-//   return Promise.reject(error)
-// })
+Axios.interceptors.request.use(config => {
+  if (store.state.token) {
+    config.headers.common['authorization'] = `Bearer ${store.state.token}`
+  }
+  return config
+}, error => {
+  return Promise.reject(error)
+})
 
 /* eslint-disable no-new */
 new Vue({

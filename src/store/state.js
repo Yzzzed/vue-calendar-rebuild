@@ -1,6 +1,6 @@
 import moment from 'moment'
 
-let user, time, token
+let user, time, token, selectedDate
 let date = moment(new Date()).format('YYYY-MM-DD')
 let onlyUser = false
 try {
@@ -16,5 +16,6 @@ export default {
   date,
   time,
   token,
-  onlyUser
+  onlyUser,
+  selectedDate
 }
