@@ -18,8 +18,10 @@ fastClick.attach(document.body)
 
 Vue.use(ElementUI)
 
-// Axios.defaults.timeout = 5000 // 请求超时
-// Axios.defaults.baseURL = 'http://backcalendar.hyzed.cn/'
+if (process.env === 'production') {
+  Axios.defaults.timeout = 5000 // 请求超时
+  Axios.defaults.baseURL = 'http://backcalendar.hyzed.cn/'
+}
 
 Axios.interceptors.request.use(config => {
   if (store.state.token) {
