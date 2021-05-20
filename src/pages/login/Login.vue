@@ -20,7 +20,7 @@ export default {
 <style lang="stylus" scoped>
   .login
     min-height 100vh
-    background url('~@/assets/imgs/背景图.jpg') center center no-repeat
+    background #409EFF
     background-size 100% 100%
     background-attachment fixed
     display flex

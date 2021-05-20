@@ -99,7 +99,7 @@ export default {
     display flex
     justify-content center
     .form-container
-      width 55%
+      width 35%
       background #D1DCE2
       border-radius 5px
       .form-title

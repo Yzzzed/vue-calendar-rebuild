@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="all-container">
     <div class="card-container" style="overflow:auto; padding: 0 20px;">
       <el-table
         :data="$attrs.eventList.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
@@ -11,6 +11,7 @@
           <template slot-scope="props">
             <p class="expand-title">详细内容:</p>
             <p class="expand-detail">{{props.row.detail}}</p>
+            <p class="expand-income" v-if="props.row.haveIncome">{{props.row.income >= 0 ? `收入: ${props.row.income}` : `支出${props.row.income * -1}`}}</p>
           </template>
         </el-table-column>
         <el-table-column prop="action" label="事件" min-width="25%"></el-table-column>
@@ -36,6 +37,7 @@
         :total="$attrs.eventList.length"
         :page-size="pageSize"
         class="pagination"
+        v-show="$attrs.eventList.length > 5"
       ></el-pagination>
     </div>
   </div>
@@ -43,13 +45,14 @@
 
 <style lang="stylus" scoped>
   .card-container
-    height 9.444444rem /* 510/54 */
+    height calc(100vh - 1.907407rem /* 103/54 */)
     display flex
     flex-direction column
     justify-content space-between
     .pagination
-      display flex
-      justify-content center
+      margin 0 auto
+      position sticky
+      bottom 0
     .event-card
       width 100%
       // display flex
@@ -58,6 +61,10 @@
       .expand-title
         padding 0 0 0.37037rem /* 20/54 */ 0
         font-weight bolder
+      .expand-detail
+        padding 0 0 10px 0
+      .expand-income
+        padding 0 0 10px 0
   >>>.el-table
     overflow hidden
     .success-row
@@ -93,6 +100,8 @@ export default {
           return '办公室业务'
         case '7':
           return '其他工作'
+        default:
+          return row.category
       }
     },
     // 事件发布者格式化

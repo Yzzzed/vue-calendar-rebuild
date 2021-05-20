@@ -5,7 +5,8 @@
         <h1>
           <el-link type="info" style="color: #fff;" @click="updateNickname">{{user}}</el-link>
           <i class="el-icon-edit el-icon--right"></i>
-          <el-divider direction="vertical"></el-divider>备忘录
+          <el-divider direction="vertical"></el-divider>
+          <span>备忘录</span>
         </h1>
       </el-header>
       <el-main class="main">

@@ -1,7 +1,7 @@
 <template>
   <div class="header">
-    <el-image :src="logoURL" fit="scale-down" class="header-img"></el-image>
-    <span class="header-title">东北师范大学</span>
+    <!-- <el-image :src="logoURL" fit="scale-down" class="header-img"></el-image> -->
+    <span class="header-title">日程管理系统</span>
   </div>
 </template>
 

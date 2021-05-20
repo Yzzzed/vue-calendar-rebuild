@@ -12,43 +12,6 @@
       </ul>
     </div>
     <router-view v-bind="$attrs" v-on="$listeners"></router-view>
-    <!-- <div class="card-container" style="overflow:auto; padding: 0 20px;">
-      <el-card v-for="(event, index) of eventList" :key="index" style="margin: .092592rem;">
-        <div class="event-card">
-          <div class="event-action">{{event.action}}</div>
-          <div class="event-category">{{event.category}}</div>
-          <div class="event-user">{{event.performer.username}}</div>
-          <div class="event-time">{{event.date}}</div>
-        </div>
-      </el-card>
-      <el-table
-        :data="curEventList"
-        class="event-card"
-        :default-sort="{prop: 'date', order: 'descending'}"
-      >
-        <el-table-column type="expand">
-          <template slot-scope="props">
-            <p class="expand-title">详细内容:</p>
-            <p class="expand-detail">{{props.row.detail}}</p>
-          </template>
-        </el-table-column>
-        <el-table-column prop="action" label="事件" min-width="25%"></el-table-column>
-        <el-table-column
-          prop="category"
-          label="分类"
-          :formatter="formatterCategory"
-          sortable
-          min-width="25%"
-        ></el-table-column>
-        <el-table-column prop="date" label="日期" sortable min-width="25%"></el-table-column>
-        <el-table-column
-          prop="performer"
-          :formatter="formatterPerformer"
-          label="发布者"
-          min-width="25%"
-        ></el-table-column>
-      </el-table>
-    </div>-->
     <el-popover placement="top" v-model="visible" trigger="click">
       <div class="event-form">
         <h3 class="event-title">添加日程</h3>
@@ -65,7 +28,7 @@
           <el-form-item label="详情" label-width=".925925rem" class="event-form-item" prop="detail">
             <el-input v-model="form.detail" type="textarea" :autosize="{ minRows: 1, maxRows: 4}"></el-input>
           </el-form-item>
-          <el-form-item label="类别" label-width=".925925rem" class="event-form-item" prop="category">
+          <el-form-item label="类别" label-width=".925925rem" class="event-form-item" prop="category" v-if="!form.isCustom">
             <el-select v-model="form.category" clearable placeholder="请选择">
               <el-option
                 v-for="item in options"
@@ -75,15 +38,40 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="时间" label-width=".925925rem" class="event-form-item" prop="date">
+          <el-form-item label="分类" label-width=".925925rem" class="event-form-item" prop="customCategory" v-if="form.isCustom">
+            <el-input v-model="form.customCategory" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="日期" label-width=".925925rem" class="event-form-item" prop="date">
             <el-date-picker
               v-model="form.date"
               style="width: 100%;"
               :default-value="Date.now()"
               value-format="yyyy-MM-dd"
-              placeholder="请选择时间"
+              placeholder="请选择日期"
               :picker-options="pickerOptions"
             ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="时间" label-width=".925925rem" class="event-form-item" prop="time" v-if="form.isDateExact">
+            <el-time-picker
+              v-model="form.time"
+              style="width: 100%;"
+              value-format="HH:mm"
+              format="HH:mm"
+              placeholder="请选择时间"
+              arrow-control
+            ></el-time-picker>
+          </el-form-item>
+          <el-form-item label="收支" label-width=".925925rem" class="event-form-item" prop="income" v-if="form.haveIncome">
+            <el-input v-model="form.income" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item size="small" label="精确时间？" label-width="2.925925rem" class="event-form-item" prop="isDateExact">
+            <el-switch v-model="form.isDateExact"></el-switch>
+          </el-form-item>
+          <el-form-item size="small" label="自定义分类？" label-width="2.925925rem" class="event-form-item" prop="isCustom">
+            <el-switch size="small" v-model="form.isCustom"></el-switch>
+          </el-form-item>
+          <el-form-item size="small" label="收支？" label-width="2.925925rem" class="event-form-item" prop="haveIncome">
+            <el-switch v-model="form.haveIncome"></el-switch>
           </el-form-item>
           <el-form-item>
             <el-button @click="visible = false">取 消</el-button>
@@ -91,7 +79,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <el-button type="primary" icon="el-icon-plus" circle class="addBtn" slot="reference"></el-button>
+      <el-button title="添加日程" type="primary" icon="el-icon-plus" circle class="addBtn" slot="reference"></el-button>
     </el-popover>
   </div>
 </template>
@@ -119,16 +107,28 @@
         form: {
           action: '',
           date: '',
+          time: '',
           detail: '',
-          category: ''
+          category: '',
+          customCategory: '',
+          income: 0,
+          isDateExact: false,
+          isCustom: false,
+          haveIncome: false,
         },
         rules: {
           action: [{ required: true, message: '请填写事件~', trigger: 'blur' }],
           detail: [
             { required: true, message: '请填写详细内容~', trigger: 'blur' }
           ],
-          date: [{ required: true, message: '请选择时间~', trigger: 'blur' }],
-          category: [{ required: true, message: '请选择类别~', trigger: 'blur' }]
+          date: [{ required: true, message: '请选择日期~', trigger: 'blur' }],
+          time: [{ required: true, message: '请选择时间~', trigger: 'blur' }],
+          category: [{ required: true, message: '请选择类别~', trigger: 'blur' }],
+          customCategory: [{ required: false, message: '请填写分类~', trigger: 'change'}],
+          income: [{ required: false, message: '请选择时间~', trigger: 'blur'}],
+          isDateExact: [{ required: true }],
+          isCustom: [{ required: true }],
+          haveIncome: [{ required: true }],
         },
         pickerOptions: {
           disabledDate (time) {
@@ -177,31 +177,31 @@
         },
         options: [
           {
-            value: '1',
+            value: '科研成果',
             label: '科研成果'
           },
           {
-            value: '2',
+            value: '科研项目',
             label: '科研项目'
           },
           {
-            value: '3',
+            value: '科研平台',
             label: '科研平台'
           },
           {
-            value: '4',
+            value: '学术活动',
             label: '学术活动'
           },
           {
-            value: '5',
+            value: '党务工作',
             label: '党务工作'
           },
           {
-            value: '6',
+            value: '办公室业务',
             label: '办公室业务'
           },
           {
-            value: '7',
+            value: '其他工作',
             label: '其他工作'
           }
         ]
@@ -231,12 +231,7 @@
             // axios
             //   .get(`/api/events/${this.$store.state.date}`)
             //   .then(this.handleEventList)
-            axios.all([
-              axios.get(`/api/events/${this.$store.state.date}`),
-              axios.get(`/api/events/${this.$store.state.date}/${localStorage.userid}`)
-            ]).then(axios.spread((allRes, userRes) => {
-              this.handleList(allRes, userRes)
-            }))
+            
           }
         })
       },
@@ -246,6 +241,12 @@
         if (res) {
           this.newEvent = res
           this.newEvent.performer = this.$store.state.user
+          axios.all([
+              axios.get(`/api/events/${this.$store.state.date}`),
+              axios.get(`/api/events/${this.$store.state.date}/${localStorage.userid}`)
+            ]).then(axios.spread((allRes, userRes) => {
+              this.handleList(allRes, userRes)
+            }))
           return res
         }
       },
@@ -259,7 +260,11 @@
           .then(res => {
             res = res.data
             if (res) {
-              alert('添加日程成功！')
+              // alert('添加日程成功！')
+              this.$message({
+                message: '添加日程成功！',
+                type: 'success',
+              })
               this.visible = false
             }
           })
@@ -294,6 +299,8 @@
           case '7':
             return '其他工作'
             break
+          default:
+            break
         }
       },
       //事件发布者格式化
@@ -305,7 +312,7 @@
       const today = moment(new Date()).format('YYYY-MM-DD')
       this.setDateValue(today)
       // this.curEventList = this.eventList
-      console.log('son', this.$attrs)
+      // console.log('son', this.$attrs)
     }
   }
 </script>
@@ -315,6 +322,7 @@
     margin-top 0
   .right-calendar
     width 72.5%
+    height calc(100vh - 1.907407rem /* 103/54 */)
     .btn-list
       display flex
       justify-content space-between
@@ -350,6 +358,6 @@
       width 80%
   .addBtn
     position fixed
-    right 0.925926rem /* 50/54 */
-    bottom 0.555556rem /* 30/54 */
+    right 50px /* 50/54 */
+    bottom 50px /* 30/54 */
 </style>

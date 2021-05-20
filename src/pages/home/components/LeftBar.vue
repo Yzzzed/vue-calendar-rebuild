@@ -21,6 +21,10 @@
     <div class="todolist-container">
       <todo-list></todo-list>
     </div>
+    <div class="btn-group">
+      <el-button title="退出登录" type="warning" icon="el-icon-close" circle></el-button>
+      <el-button title="分类配置" type="info" icon="el-icon-setting" circle></el-button>
+    </div>
   </div>
 </template>
 
@@ -95,4 +99,9 @@ export default {
       color #1989FA
   >>>.mx-calendar-content
     width 100%
+  .btn-group
+    display flex
+    align-items center
+    justify-content space-around
+    height calc(100vh- 470px- 270px)
 </style>

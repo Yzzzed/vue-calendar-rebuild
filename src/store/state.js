@@ -4,8 +4,11 @@ let user, time, token, selectedDate
 let date = moment(new Date()).format('YYYY-MM-DD')
 let onlyUser = false
 try {
-  if (localStorage.user) {
-    user = localStorage.user
+  if (localStorage.getItem('user')) {
+    user = localStorage.getItem('user')
+  }
+  if (localStorage.getItem('token')) {
+    token = localStorage.getItem('user')
   }
 } catch (e) {
   console.error(e)
